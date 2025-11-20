@@ -1,47 +1,227 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* You can keep other global styles here if needed */
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-@keyframes logo-spin {
+@keyframes slideDown {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(-20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.6s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.button-primary {
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(to right, rgb(37, 99, 235), rgb(29, 78, 216));
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.button-primary:hover {
+  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.5);
+  transform: translateY(-4px);
+}
+
+.button-primary:active {
+  transform: translateY(0);
+}
+
+.button-secondary {
+  padding: 0.75rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: rgb(37, 99, 235);
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border: 2px solid white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+  transform: translateY(-4px);
+}
+
+.button-secondary:active {
+  transform: translateY(0);
 }
 
 .card {
-  padding: 2em;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease-out;
 }
 
-.read-the-docs {
-  color: #888;
+.card-featured {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.6s ease-out;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0.75rem;
+  color: rgb(15, 23, 42);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.input-field::placeholder {
+  color: rgb(100, 116, 139);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: rgb(96, 165, 250);
+  box-shadow: 0 0 0 3px rgba(191, 219, 254, 0.5);
+}
+
+.nav-button {
+  position: relative;
+  padding: 0.65rem 1.8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.nav-button.active {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: rgb(37, 99, 235);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid white;
+}
+
+.nav-button:not(.active) {
+  color: rgb(55, 65, 81);
+  background-color: transparent;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.nav-button:not(.active):hover {
+  color: rgb(17, 24, 39);
+  background-color: rgba(255, 255, 255, 0.65);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.glassmorphic {
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.hero-section {
+  text-align: center;
+  padding: 1rem 1.25rem 1.5rem;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0));
+  border-radius: 1.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 35px 80px -35px rgba(0, 0, 0, 0.35);
+}
+
+.tabs-wrapper {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  padding: 0.75rem 1rem;
+  box-shadow: 0 35px 80px -45px rgba(0, 0, 0, 0.45);
 }
