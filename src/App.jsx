@@ -12,15 +12,15 @@ const MessageBox = ({ message, type, onClose }) => {
     const icon = isError ? '⚠️' : '✓';
 
     return (
-        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in">
-            <div className={`glassmorphic rounded-3xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center justify-center gap-4 animate-slide-up ${isError ? 'border-red-300/60' : 'border-green-300/60'}`}>
-                <div className={`w-16 h-16 rounded-full ${isError ? 'bg-red-100' : 'bg-green-100'} flex items-center justify-center text-3xl animate-pulse`}>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-fade-in">
+            <div className={`glassmorphic rounded-3xl shadow-2xl p-8 max-w-sm w-full flex flex-col items-center justify-center gap-4 animate-slide-up ${isError ? 'border-red-200/50 bg-red-50/80' : 'border-green-200/50 bg-green-50/80'}`}>
+                <div className={`w-16 h-16 rounded-full ${isError ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'} flex items-center justify-center text-3xl animate-pulse shadow-sm`}>
                     {icon}
                 </div>
                 <p className={`text-lg text-center font-semibold ${isError ? 'text-red-900' : 'text-green-900'}`}>{message}</p>
                 <button
                     onClick={onClose}
-                    className="mt-4 px-8 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold transition-all duration-300 hover:-translate-y-1 shadow-lg"
+                    className="mt-4 px-8 py-2.5 bg-white/80 hover:bg-white text-slate-800 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-1 shadow-sm border border-slate-200/50"
                 >
                     Dismiss
                 </button>
@@ -237,97 +237,106 @@ const App = () => {
 
     return (
         <AppContext.Provider value={{ web3, contract, currentAccount, isOwner, isAuthorizedVoter, isAuthenticated, showMessage, clearMessage, isLoading, setIsLoading, userEmail }}>
-            <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-blue-100">
+            <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 selection:bg-indigo-100 selection:text-indigo-900">
                 {/* Navigation Bar */}
-                <nav className="fixed top-0 left-0 right-0 z-40 bg-white/50 backdrop-blur-xl border-b border-white/60 animate-slide-down">
-                    <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-                        <div className="flex items-center gap-3">
-                            <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <nav className="fixed top-0 left-0 right-0 z-40 bg-white/70 backdrop-blur-xl border-b border-white/50 transition-all duration-300">
+                    <div className="max-w-7xl mx-auto px-6 py-4 relative flex items-center justify-between">
+                        <div className="flex items-center gap-3 group cursor-pointer" onClick={() => setCurrentPage('auth')}>
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white text-xl shadow-lg shadow-indigo-200 group-hover:scale-105 transition-transform duration-300">
+                                🗳️
+                            </div>
+                            <div className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent tracking-tight">
                                 SecureVote
                             </div>
                         </div>
+
                         <button 
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="md:hidden text-slate-700 hover:text-slate-900 transition text-2xl"
+                            className="md:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition-colors ml-4"
                         >
-                            ☰
+                            <span className="text-2xl">☰</span>
                         </button>
                     </div>
+
+                    <div className="hidden md:flex absolute inset-x-0 top-1/2 -translate-y-1/2 justify-center pointer-events-none">
+                        <div className="pointer-events-auto flex items-center gap-3 bg-white/90 shadow-lg rounded-full px-4 py-2 border border-indigo-100/60 backdrop-blur-2xl">
+                            <button
+                                onClick={() => setCurrentPage('auth')}
+                                className={`nav-pill-button ${currentPage === 'auth' ? 'active' : ''}`}
+                            >
+                                Authentication
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage('vote')}
+                                className={`nav-pill-button ${currentPage === 'vote' ? 'active' : ''} ${!isAuthenticated || !currentAccount ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                disabled={!isAuthenticated || !currentAccount}
+                            >
+                                Voting
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage('results')}
+                                className={`nav-pill-button ${currentPage === 'results' ? 'active' : ''}`}
+                            >
+                                Results
+                            </button>
+                            {isOwner && (
+                                <button
+                                    onClick={() => setCurrentPage('admin')}
+                                    className={`nav-pill-button ${currentPage === 'admin' ? 'active' : ''}`}
+                                >
+                                    Admin
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Mobile Menu */}
+                    {sidebarOpen && (
+                        <div className="md:hidden absolute top-full left-0 right-0 bg-white/90 backdrop-blur-xl border-b border-slate-200/50 p-4 flex flex-col gap-2 animate-slide-down shadow-xl">
+                            <button onClick={() => { setCurrentPage('auth'); setSidebarOpen(false); }} className="p-3 rounded-xl hover:bg-slate-50 text-left font-medium text-slate-700">🔐 Authentication</button>
+                            <button onClick={() => { setCurrentPage('vote'); setSidebarOpen(false); }} className="p-3 rounded-xl hover:bg-slate-50 text-left font-medium text-slate-700" disabled={!isAuthenticated || !currentAccount}>🗳️ Voting</button>
+                            <button onClick={() => { setCurrentPage('results'); setSidebarOpen(false); }} className="p-3 rounded-xl hover:bg-slate-50 text-left font-medium text-slate-700">📊 Results</button>
+                            {isOwner && <button onClick={() => { setCurrentPage('admin'); setSidebarOpen(false); }} className="p-3 rounded-xl hover:bg-slate-50 text-left font-medium text-slate-700">⚙️ Admin Panel</button>}
+                        </div>
+                    )}
                 </nav>
 
                 {/* Main Content */}
-                <div className="pt-32 pb-20 px-4 flex justify-center">
-                    <div className="w-full max-w-[1100px]">
-                        {/* Header Section */}
-                        <div className="hero-section animate-slide-up">
-                            <p className="text-sm uppercase tracking-[0.4em] text-blue-500 mb-3">High trust · Decentralized ballots</p>
-                            <h1 className="text-6xl md:text-7xl font-black bg-gradient-to-r from-blue-700 to-purple-600 bg-clip-text text-transparent">
-                                Secure Blockchain Voting
-                            </h1>
-                            <p className="text-xl text-slate-700 max-w-2xl mx-auto mt-4">
-                                Authentication with Email Verification & Ethereum Wallet Connection
-                            </p>
-                        </div>
-
-                        {/* Navigation Tabs */}
-                        <div className="tabs-wrapper mb-16">
-                            <div className="flex flex-wrap gap-3 justify-center">
-                                <button 
-                                    onClick={() => { setCurrentPage('auth'); setSidebarOpen(false); }} 
-                                    className={`nav-button ${currentPage === 'auth' ? 'active' : ''}`}
-                                >
-                                    🔐 Authentication
-                                </button>
-                                <button 
-                                    onClick={() => { setCurrentPage('vote'); setSidebarOpen(false); }} 
-                                    className={`nav-button ${currentPage === 'vote' ? 'active' : ''} ${!isAuthenticated || !currentAccount ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    disabled={!isAuthenticated || !currentAccount}
-                                >
-                                    🗳️ Voting
-                                </button>
-                                <button 
-                                    onClick={() => { setCurrentPage('results'); setSidebarOpen(false); }} 
-                                    className={`nav-button ${currentPage === 'results' ? 'active' : ''}`}
-                                >
-                                    📊 Results
-                                </button>
-                                {isOwner && (
-                                    <button 
-                                        onClick={() => { setCurrentPage('admin'); setSidebarOpen(false); }} 
-                                        className={`nav-button ${currentPage === 'admin' ? 'active' : ''}`}
-                                    >
-                                        ⚙️ Admin Panel
-                                    </button>
-                                )}
+                <div className="pt-28 pb-12 px-4 flex flex-col items-center justify-center min-h-screen w-full">
+                    <div className="w-full max-w-7xl flex flex-col items-center">
+                        {/* Header Section - Only show on Auth page or if needed */}
+                        {currentPage === 'auth' && (
+                            <div className="hero-section animate-slide-up mb-8 w-full max-w-4xl mx-auto flex flex-col items-center text-center">
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-wider mb-6 shadow-sm mx-auto">
+                                    <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                                    Secure Blockchain System
+                                </div>
+                                <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 tracking-tight leading-tight text-center">
+                                    Decentralized <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Voting</span>
+                                </h1>
+                                <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed text-center">
+                                    Experience the future of democracy with our secure, transparent, and immutable voting platform powered by Ethereum.
+                                </p>
                             </div>
-                        </div>
+                        )}
 
                         {/* Loading overlay */}
                         {isLoading && (
-                            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-                                <div className="flex flex-col items-center p-8 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60">
-                                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
-                                    <p className="text-lg font-semibold text-blue-700">Processing...</p>
+                            <div className="fixed inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+                                <div className="flex flex-col items-center p-8 bg-white rounded-3xl shadow-2xl border border-slate-100">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-100 border-t-indigo-600 mb-4"></div>
+                                    <p className="text-lg font-semibold text-slate-700">Processing...</p>
                                 </div>
                             </div>
                         )}
 
                         {/* Page content */}
                         <div className="animate-slide-up w-full flex justify-center">
-                            <div className="w-full">
-                                {renderPage()}
-                            </div>
+                            {renderPage()}
                         </div>
                     </div>
                 </div>
 
-                {/* Footer */}
-                <footer className="border-t border-white/40 bg-white/20 backdrop-blur-xl py-8 mt-16">
-                    <div className="max-w-7xl mx-auto px-6 text-center text-slate-700">
-                        <p className="font-medium">Secure Blockchain Voting System</p>
-                        <p className="text-sm mt-1">Powered by Ethereum • Email Auth • Smart Contracts</p>
-                    </div>
-                </footer>
 
                 <MessageBox message={message} type={messageType} onClose={clearMessage} />
             </div>
@@ -377,76 +386,93 @@ const Auth = ({ onLogin, isAuthenticated, onLogout, onConnectWallet, currentAcco
     };
 
     return (
-        <div className="flex justify-center items-start w-full px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+        <div className="flex justify-center items-center w-full px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
                 
                 {/* Email Login Card */}
-                <div className="card">
-                    <div className="text-6xl mb-6 text-center animate-float">📧</div>
-                    <h2 className="text-3xl font-bold text-center mb-2 text-slate-900">Email Login</h2>
-                    <p className="text-center text-slate-700 mb-8">Secure access with verification code</p>
-                    <div className="space-y-3">
+                <div className="card h-full flex flex-col min-h-[400px]">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mb-6 shadow-sm">📧</div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Email Authentication</h2>
+                    <p className="text-slate-600 mb-8">Verify your identity to participate in the voting process.</p>
+                    
+                    <div className="space-y-4 mt-auto">
                         {!isAuthenticated ? (
                             step === 1 ? (
                                 <>
-                                    <input 
-                                        type="email" 
-                                        placeholder="name@example.com" 
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="input-field w-full"
-                                    />
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+                                        <input 
+                                            type="email" 
+                                            placeholder="name@example.com" 
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="input-field w-full"
+                                        />
+                                    </div>
                                     <button onClick={handleSendCode} className="button-primary w-full" disabled={isLoading}>
-                                        {isLoading ? '⏳ Sending...' : '📩 Send Code'}
+                                        {isLoading ? 'Sending Code...' : 'Send Verification Code'}
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <p className="text-sm text-center text-slate-600 mb-2">Enter code sent to <b>{email}</b></p>
+                                    <div className="text-center mb-4">
+                                        <p className="text-sm text-slate-600 mb-2">Enter the 6-digit code sent to</p>
+                                        <p className="font-semibold text-slate-900">{email}</p>
+                                    </div>
                                     <input 
                                         type="text" 
-                                        placeholder="123456" 
+                                        placeholder="000000" 
                                         value={code}
                                         onChange={(e) => setCode(e.target.value)}
-                                        className="input-field w-full text-center text-2xl tracking-widest"
+                                        className="input-field w-full text-center text-3xl tracking-[0.5em] font-mono py-4"
                                         maxLength={6}
                                     />
                                     <button onClick={handleVerifyCode} className="button-primary w-full" disabled={isLoading}>
-                                        ✅ Verify & Login
+                                        Verify & Login
                                     </button>
-                                    <button onClick={resetAuth} className="text-sm text-blue-600 underline w-full text-center hover:text-blue-800">
-                                        Use a different email
+                                    <button onClick={resetAuth} className="text-sm text-indigo-600 font-medium w-full text-center hover:text-indigo-800 transition-colors">
+                                        Change email address
                                     </button>
                                 </>
                             )
                         ) : (
-                            <>
-                                <div className="glassmorphic bg-green-50/60 rounded-2xl p-4 text-center border-green-200/60">
-                                    <p className="text-green-900 font-bold text-lg">✓ Authenticated</p>
-                                    <p className="text-green-800 text-sm mt-1">Logged in as {email}</p>
-                                </div>
-                                <button onClick={onLogout} className="button-secondary w-full">🚪 Sign Out</button>
-                            </>
+                            <div className="bg-green-50/50 border border-green-100 rounded-2xl p-6 text-center flex flex-col items-center justify-center h-full">
+                                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl mb-3">✓</div>
+                                <p className="text-green-900 font-bold text-lg">Authenticated</p>
+                                <p className="text-green-700 text-sm mt-1 mb-4">{email}</p>
+                                <button onClick={onLogout} className="button-secondary w-full text-sm py-2">Sign Out</button>
+                            </div>
                         )}
                     </div>
                 </div>
 
                 {/* MetaMask Card */}
-                <div className="card">
-                    <div className="text-6xl mb-6 text-center animate-float" style={{ animationDelay: '1s' }}>🦊</div>
-                    <h2 className="text-3xl font-bold text-center mb-2 text-slate-900">MetaMask</h2>
-                    <p className="text-center text-slate-700 mb-8">Connect your Ethereum wallet</p>
-                    <div className="space-y-3">
+                <div className="card h-full flex flex-col min-h-[400px]">
+                    <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center text-3xl mb-6 shadow-sm">🦊</div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-2">Wallet Connection</h2>
+                    <p className="text-slate-600 mb-8">Connect your Ethereum wallet to cast your vote securely.</p>
+                    
+                    <div className="space-y-4 mt-auto">
                         {currentAccount ? (
-                            <div className="glassmorphic bg-blue-50/60 rounded-2xl p-4 text-center border-blue-200/60">
-                                <p className="text-blue-700 text-xs font-medium mb-2">Connected Wallet</p>
-                                <p className="text-blue-900 font-mono text-sm break-all">{currentAccount}</p>
+                            <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-6 text-center flex flex-col items-center justify-center h-full">
+                                <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xl mb-3">🔗</div>
+                                <p className="text-indigo-900 font-bold text-lg">Wallet Connected</p>
+                                <p className="text-indigo-700 font-mono text-xs mt-1 break-all bg-white/50 py-2 px-3 rounded-lg border border-indigo-100/50 w-full">{currentAccount}</p>
                             </div>
                         ) : (
                             <>
-                                <p className="text-center text-slate-700 mb-4">Link your wallet to participate</p>
-                                <button onClick={onConnectWallet} className="button-primary w-full" disabled={isLoading || !isWeb3LibLoaded}>
-                                    {isLoading ? '⏳ Connecting...' : (isWeb3LibLoaded ? '🔗 Connect MetaMask' : '📥 Loading...')}
+                                <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 mb-2">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+                                        <p className="text-sm text-slate-600">Install MetaMask extension</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-slate-400"></div>
+                                        <p className="text-sm text-slate-600">Create or import a wallet</p>
+                                    </div>
+                                </div>
+                                <button onClick={onConnectWallet} className="button-primary w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-orange-200" disabled={isLoading || !isWeb3LibLoaded}>
+                                    {isLoading ? 'Connecting...' : (isWeb3LibLoaded ? 'Connect MetaMask' : 'Loading Web3...')}
                                 </button>
                             </>
                         )}
@@ -695,35 +721,39 @@ const VotingInterface = ({ userEmail }) => {
     };
 
     if (!isAuthenticated || !currentAccount) return (
-        <div className="card text-center max-w-2xl mx-auto">
-            <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">Access Restricted</h2>
-            <p className="text-slate-700">Please verify your email and connect your wallet first</p>
+        <div className="card text-center max-w-2xl mx-auto py-16">
+            <div className="text-6xl mb-6 animate-bounce">🔒</div>
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">Access Restricted</h2>
+            <p className="text-slate-600 text-lg">Please verify your email and connect your wallet to access the voting booth.</p>
         </div>
     );
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="card text-center mb-12">
-                <h2 className="text-4xl font-bold text-slate-900 mb-4">Select Your Candidate</h2>
-                {userEmail && <p className="text-sm text-slate-500 mb-4">Logged in as: <b>{userEmail}</b></p>}
+            <div className="card text-center mb-12 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                <h2 className="text-4xl font-bold text-slate-900 mb-4 mt-2">Cast Your Vote</h2>
+                {userEmail && <p className="text-sm text-slate-500 mb-6 bg-slate-100 inline-block px-4 py-1 rounded-full">Logged in as: <span className="font-semibold text-slate-700">{userEmail}</span></p>}
                 
                 {/* Authorization Warning Banner */}
                 {!isAuthorizedVoter && (
-                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 text-left rounded shadow-md max-w-2xl mx-auto">
-                        <p className="font-bold">🚫 Not Authorized</p>
-                        <p>Your wallet address <code>{currentAccount}</code> is not authorized to vote.</p>
-                        <p className="text-sm mt-1">Please contact the election administrator to approve this wallet.</p>
+                    <div className="bg-red-50 border border-red-100 text-red-800 p-6 mb-8 text-left rounded-2xl shadow-sm max-w-3xl mx-auto flex items-start gap-4">
+                        <div className="text-3xl">🚫</div>
+                        <div>
+                            <p className="font-bold text-lg">Not Authorized</p>
+                            <p className="mt-1">Your wallet address <code className="bg-red-100 px-2 py-0.5 rounded text-sm font-mono">{currentAccount}</code> is not authorized to vote.</p>
+                            <p className="text-sm mt-2 text-red-600">Please contact the election administrator to approve this wallet.</p>
+                        </div>
                     </div>
                 )}
 
                 <div className="flex gap-4 justify-center flex-wrap">
-                    <div className={`badge ${votingStatus ? 'bg-green-100/60 text-green-900 border border-green-200/60 glassmorphic' : 'bg-red-100/60 text-red-900 border border-red-200/60 glassmorphic'}`}>
+                    <div className={`badge ${votingStatus ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
                         {votingStatus ? '● Voting Status: OPEN' : '● Voting Status: CLOSED'}
                     </div>
                     {hasVoted && (
-                        <div className="badge bg-amber-100/60 text-amber-900 border border-amber-200/60 glassmorphic">
+                        <div className="badge bg-amber-100 text-amber-800 border border-amber-200">
                             ✓ You have voted
                         </div>
                     )}
@@ -731,43 +761,49 @@ const VotingInterface = ({ userEmail }) => {
             </div>
             
             {/* Candidates Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {candidates.length === 0 ? (
-                    <div className="col-span-full text-center p-8 text-slate-500">
-                        No candidates have been added yet.
+                    <div className="col-span-full text-center p-16 bg-white/50 rounded-3xl border border-dashed border-slate-300">
+                        <div className="text-4xl mb-4 opacity-50">📭</div>
+                        <p className="text-slate-500 text-lg">No candidates have been added yet.</p>
                     </div>
                 ) : (
                     candidates.map((candidate, index) => (
                         <div 
                             key={candidate.id.toString()} 
-                            className="card group hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col"
+                            className="card group hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col relative overflow-hidden border-t-4 border-t-transparent hover:border-t-indigo-500"
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                            <div className="flex items-start justify-between mb-6">
-                                <div>
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-2xl font-bold text-white mb-3">
-                                        {candidate.name.substring(0, 2).toUpperCase()}
-                                    </div>
-                                    <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-700 transition">{candidate.name}</h3>
-                                </div>
-                                <div className="text-4xl">🏛️</div>
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <div className="text-6xl">🏛️</div>
                             </div>
-                            <div className="bg-blue-50/50 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-blue-100/60">
-                                <p className="text-slate-700 text-sm font-medium mb-1">Votes Received</p>
-                                <div className="text-3xl font-bold text-blue-700">{candidate.voteCount.toString()}</div>
+                            
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
+                                    {candidate.name.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">{candidate.name}</h3>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-1">Candidate #{candidate.id.toString()}</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-100 group-hover:bg-indigo-50/50 group-hover:border-indigo-100 transition-colors">
+                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Current Votes</p>
+                                <div className="text-3xl font-black text-slate-800 group-hover:text-indigo-700 transition-colors">{candidate.voteCount.toString()}</div>
                             </div>
                             
                             {/* Vote Button Logic */}
                             <button 
                                 onClick={() => handleVote(candidate.id.toString())} 
-                                className={`button-primary w-full mt-auto ${(!votingStatus || hasVoted || !isAuthorizedVoter) ? 'opacity-50 cursor-not-allowed bg-gray-400' : ''}`} 
+                                className={`button-primary w-full mt-auto py-3 text-lg ${(!votingStatus || hasVoted || !isAuthorizedVoter) ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:scale-[1.02]'}`} 
                                 disabled={!votingStatus || hasVoted || !isAuthorizedVoter}
                             >
                                 {votingStatus 
                                     ? (hasVoted 
                                         ? '✓ Already Voted' 
-                                        : (isAuthorizedVoter ? '✓ Vote' : '🚫 Authorization Required')) 
-                                    : '✕ Voting Closed'}
+                                        : (isAuthorizedVoter ? 'Vote Now' : 'Not Authorized')) 
+                                    : 'Voting Closed'}
                             </button>
                         </div>
                     ))
@@ -832,78 +868,113 @@ const Results = () => {
     }, [fetchResults]);
 
     return (
-        <div className="max-w-5xl mx-auto">
-            <div className="card text-center mb-12">
-                <h2 className="text-4xl font-bold text-slate-900 mb-4">📊 Voting Results</h2>
-                <div className={`badge inline-block ${votingStatus ? 'bg-amber-100/60 text-amber-900 border border-amber-200/60 glassmorphic' : 'bg-green-100/60 text-green-900 border border-green-200/60 glassmorphic'}`}>
-                    {votingStatus ? '⏳ Voting in Progress' : '✓ Voting Concluded'}
-                </div>
-                <p className="text-slate-700 text-lg mt-4">Total Votes: <span className="font-bold text-blue-700">{totalVotes}</span></p>
-            </div>
-
-            {candidates.length === 0 ? (
+        <section className="w-full px-4 py-12 lg:py-16">
+            <div className="max-w-6xl mx-auto space-y-10">
                 <div className="card text-center">
-                    <div className="text-6xl mb-4">📭</div>
-                    <p className="text-slate-700 text-lg">No votes cast yet</p>
+                    <h2 className="text-4xl font-bold text-slate-900 mb-3">Live Results</h2>
+                    <div className="flex flex-wrap justify-center gap-3 mb-6">
+                        <div className={`badge inline-flex items-center gap-2 ${votingStatus ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}`}>
+                            <span className={`w-2 h-2 rounded-full ${votingStatus ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></span>
+                            {votingStatus ? 'Voting in Progress' : 'Voting Concluded'}
+                        </div>
+                        <div className="badge bg-white/70 border border-slate-200 text-slate-600">Total Votes: <span className="font-bold text-indigo-600 text-base ml-1">{totalVotes}</span></div>
+                    </div>
+                    <p className="text-slate-600 text-lg">Real-time tallies powered by Sepolia.</p>
                 </div>
-            ) : (
-                <>
-                    {!votingStatus && winner && (
-                        <div className="card-featured mb-12 bg-gradient-to-br from-amber-100/60 to-amber-50/60 backdrop-blur-xl border border-amber-200/60 rounded-3xl p-8 shadow-2xl">
-                            <div className="text-center">
-                                <div className="text-6xl mb-4 animate-float">🏆</div>
-                                <h3 className="text-3xl font-bold text-slate-900 mb-2">Election Winner</h3>
-                                <div className="text-5xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-4">{winner.name}</div>
-                                <div className="flex gap-8 justify-center">
-                                    <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-white/60">
-                                        <p className="text-slate-600 text-sm font-medium mb-1">Votes</p>
-                                        <div className="text-4xl font-bold text-amber-700">{winner.voteCount.toString()}</div>
-                                    </div>
-                                    <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-white/60">
-                                        <p className="text-slate-600 text-sm font-medium mb-1">Percentage</p>
-                                        <div className="text-4xl font-bold text-amber-700">{totalVotes > 0 ? ((Number(winner.voteCount) / totalVotes) * 100).toFixed(1) : 0}%</div>
-                                    </div>
+
+                {candidates.length === 0 ? (
+                    <div className="card text-center py-16">
+                        <div className="text-6xl mb-4 opacity-50">📊</div>
+                        <p className="text-slate-500 text-lg">No votes have been cast yet.</p>
+                    </div>
+                ) : (
+                    <div className="grid gap-8 lg:grid-cols-[1.35fr,0.65fr] items-start">
+                        <div className="space-y-6">
+                            <div className="card">
+                                <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                                    <span>📈</span> Candidate Rankings
+                                </h3>
+                                <div className="space-y-6">
+                                    {candidates.map((candidate, index) => {
+                                        const votePercentage = totalVotes > 0 ? ((Number(candidate.voteCount) / totalVotes) * 100).toFixed(1) : 0;
+                                        const medals = ['🥇', '🥈', '🥉'];
+                                        return (
+                                            <div 
+                                                key={candidate.id.toString()} 
+                                                className="relative"
+                                                style={{ animationDelay: `${index * 0.1}s` }}
+                                            >
+                                                <div className="flex items-center gap-4 mb-2">
+                                                    <div className="w-8 text-2xl text-center font-bold text-slate-400">{medals[index] || `#${index + 1}`}</div>
+                                                    <div className="flex-1">
+                                                        <div className="flex justify-between items-end mb-1">
+                                                            <span className="font-bold text-lg text-slate-900">{candidate.name}</span>
+                                                            <span className="font-mono font-bold text-slate-700">{candidate.voteCount.toString()} votes ({votePercentage}%)</span>
+                                                        </div>
+                                                        <div className="w-full bg-slate-100 rounded-full h-4 overflow-hidden">
+                                                            <div 
+                                                                className={`h-full transition-all duration-1000 ease-out ${index === 0 ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-indigo-500 to-purple-500'}`}
+                                                                style={{ width: `${votePercentage}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
-                    )}
-
-                    <div className="card">
-                        <h3 className="text-2xl font-bold text-slate-900 mb-6">📈 Candidate Rankings</h3>
-                        <div className="space-y-4">
-                            {candidates.map((candidate, index) => {
-                                const votePercentage = totalVotes > 0 ? ((Number(candidate.voteCount) / totalVotes) * 100).toFixed(1) : 0;
-                                const medals = ['🥇', '🥈', '🥉'];
-                                return (
-                                    <div 
-                                        key={candidate.id.toString()} 
-                                        className="bg-white/40 backdrop-blur-xl rounded-2xl p-6 border border-white/60 hover:bg-white/50 transition-all duration-300 group"
-                                        style={{ animationDelay: `${index * 0.1}s` }}
-                                    >
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-3xl">{medals[index] || '✓'}</div>
-                                            <div className="flex-1">
-                                                <div className="font-bold text-lg text-slate-900 mb-2">{candidate.name}</div>
-                                                <div className="w-full bg-white/50 rounded-full h-3 border border-white/60 overflow-hidden">
-                                                    <div 
-                                                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-500"
-                                                        style={{ width: `${votePercentage}%` }}
-                                                    />
-                                                </div>
+                        <div className="space-y-6">
+                            {!votingStatus && winner && (
+                                <div className="card-featured bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-amber-200 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-8 opacity-10">
+                                        <div className="text-9xl">🏆</div>
+                                    </div>
+                                    <div className="text-center relative z-10">
+                                        <div className="w-24 h-24 bg-gradient-to-br from-amber-300 to-orange-400 rounded-full flex items-center justify-center text-5xl shadow-lg shadow-amber-200 mx-auto mb-6 animate-bounce">🏆</div>
+                                        <h3 className="text-2xl font-bold text-amber-900 mb-2 uppercase tracking-wider">Election Winner</h3>
+                                        <div className="text-5xl font-black text-slate-900 mb-6">{winner.name}</div>
+                                        <div className="flex gap-4 justify-center flex-wrap">
+                                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-amber-100 min-w-[150px]">
+                                                <p className="text-amber-800 text-sm font-bold uppercase tracking-wider mb-1">Total Votes</p>
+                                                <div className="text-3xl font-black text-slate-900">{winner.voteCount.toString()}</div>
                                             </div>
-                                            <div className="text-right">
-                                                <div className="font-bold text-slate-900">{candidate.voteCount.toString()}</div>
-                                                <div className="text-sm text-slate-600">{votePercentage}%</div>
+                                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-5 border border-amber-100 min-w-[150px]">
+                                                <p className="text-amber-800 text-sm font-bold uppercase tracking-wider mb-1">Victory Margin</p>
+                                                <div className="text-3xl font-black text-slate-900">{totalVotes > 0 ? ((Number(winner.voteCount) / totalVotes) * 100).toFixed(1) : 0}%</div>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            )}
+                            <div className="card bg-white/70 border border-slate-200/60">
+                                <h3 className="text-xl font-bold text-slate-900 mb-4">Voting Snapshot</h3>
+                                <div className="space-y-3 text-sm text-slate-600">
+                                    <div className="flex justify-between">
+                                        <span>Total Candidates</span>
+                                        <strong className="text-slate-900">{candidates.length}</strong>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Active Votes</span>
+                                        <strong className="text-indigo-600">{totalVotes}</strong>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Leading %</span>
+                                        <strong className="text-amber-600">{winner && totalVotes > 0 ? ((Number(winner.voteCount) / totalVotes) * 100).toFixed(1) : '0.0'}%</strong>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    <span className="badge bg-indigo-50 text-indigo-700 border border-indigo-100">Sepolia</span>
+                                    <span className="badge bg-slate-100 text-slate-700 border border-slate-200">Immutable Audit Log</span>
+                                    <span className="badge bg-emerald-50 text-emerald-700 border border-emerald-100">Real-time Sync</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </>
-            )}
-        </div>
+                )}
+            </div>
+        </section>
     );
 };
 
